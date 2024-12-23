@@ -1,12 +1,13 @@
 
-# [] : `scope` / `product`
+# [] : `block` / `product`
  - A `context` is just a product of `variable`s
   - ? <> : sum type (Can be constructed with [] and any) (maybe suggar)
  - Defines a scope inside of it
  - (@) refers to the current scope (the closest one)
  - (::) accesses the elements of a scope
- - (@::name:type=value) defines a field in the current context
+ - (@::name:type=value) defines a field in the current context, that is accessible from outside
  - return(@>), products return the last value, therefore putting (;) at the end makes the last element implicitly []
+ - bloks are lists of expressions separated by (;)
  - scopes inherit elements from parent scope, use cow
   - scope has access to every element in parent but modifications stay in the scope, the cannot leak
  - __builtin__
@@ -16,7 +17,9 @@
  - A scope is a list of expressions/statements
 
 # `variable`s are values created like name:type
- - they live in a `scope`
+ - (@::var) makes the var visible from outside
+ - (=) assigns a value to the var
+ - vars are unique by name+type
  - __builtin__ get & set(=)
 
 # `function`s are values
@@ -30,46 +33,40 @@
 
 
 ----
-products are lists of expressions, separated with (;)
-implicitly define a new scope that inherits the parent one, but uses cow -> Changes cannot escape the scope
-we can represent them with an:
- - Array + Hashmap
-  - If the product does not have named values just use an array :)
-  
-do we want statements (aka pure side effect no value)
-One interesting thing is to have idempotent side effects (not linked to repetition)
+do we want statements (aka pure side effect no value) (in a way not attaching a var to the context is a statement, as its value can never be accessed again)
+We need sugar for arrays having to put @:: in front of each element is crazy
+- Well we could allways do, @::[a,b,c...], like we have done for write and stdout below
+ - We can do that because ::name means attach ::[...] means get all of them (we can treat it differently depending on if we do it on a name or on @)
 
 products are half indexable, with the var and ctx constructs
-does it make sense to index them by number?
-how do we do arrays? (builtin to call a product with each element of a scope)
+we can index by number, and it returns the expression in that position, without evaluating it
+- The an interpreter just iterates the outer block and evals each line :O
 
 how do we do traits?
-what are types?
+what are types? empty variables :)
 
-what about indexing function parameters, i mean, functions are products where not all the values are bound
-doing this we 'link' the parameters, meaning if you pass it to one you can pass it to the other
+Types are boxes for their possible values, when defining a function (aka accessing @::name inside a block without giving it a value) we are specifiying a parameter of the function, with an explicit or implicit type (depending on how we use it), in this way, the type of a function is of the form references_made>output
 
-maybe its interesting to have a convention to differenciate functions from simple products?
-
-How do we deal with single-name multiple-type vars?
+And therefore a type is just an empty var, we could attach it a function to check if the given value is of the correct type
 
 
 There is going to be several targets (debug, prod, ...) so we can optimize for each
-multiple types for a name
 
-do we handle variadics? (or just pass a product with all the args)
-there needs to be a type describint products
- - we want to be able to have arities defined
 
 ----
 ```python
+# each file is a block (maybe we can import by filename?)
 
-@::user: String = "iker";
+@::user: String = "iker"; # Attaches user:String to the file block
 
-#* the `@::name` couldnt be `name`, the @:: forces the caller to explicitly pass a name var, it wont take it from the parent context *#
+# the `@::name` couldnt be `name`, the @:: forces the caller to explicitly pass a name var, it wont take it from the parent context
+# the type says, from a block that has `name` of the type std::io::write::data in a scope with std::io::write and stdout defined to []
 @::print_name: [@::name: write::data ; std::io::[write;stdout]]>[] = [
  stdout.write [@::name];
 ];
+# The above function type is not fully defined, std::io::write only has the following limitations:
+# - it must have an attached var called data that is a valid type
+# - it must accept a parameter of the type data
 
 #* name:type creates a var and adds it to the scope, var=val binds the value to the var *#
 @::id: [@::x: Int]>[Int] = [ @> x ];
