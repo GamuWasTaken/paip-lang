@@ -1,0 +1,11 @@
+
+name: type = [
+	something.func [ @::a=3 ]
+]
+
+# definition
+name : type -> var
+# assign
+var = value (either by ref, the name of the var, or by value, name: type)
+# call
+name . name block?
