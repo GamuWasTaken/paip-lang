@@ -52,18 +52,11 @@
 we can index by number, and it returns the expression in that position, without evaluating it
 - The an interpreter just iterates the outer block and evals each line :O
 
-how do we do traits?
-what are types? empty variables :)
-
-Types are boxes for their possible values, when defining a function (aka accessing @::name inside a block without giving it a value) we are specifiying a parameter of the function, with an explicit or implicit type (depending on how we use it), in this way, the type of a function is of the form references_made>output
-
 Types define a function from Self to unit that panics if the provided element was not of that type (assert)
-
 And therefore a type is just an empty var, we could attach it a function to check if the given value is of the correct type
 
 
 There is going to be several targets (debug, prod, ...) so we can optimize for each
-
 
 The possible expressions in the lang are:
 - name
@@ -72,6 +65,25 @@ The possible expressions in the lang are:
 - assign (name = value), TODO define value as value
 - return (@> value), pops the current block with value (implicit at the end of the block?)
 - calling (value.value block?), adds the first value to the block, binds it to the second value and calls it
+
+Runtime:
+scopes are represented by hashmaps
+
+we want scoped names
+there are 2 visibilities (@::name) makes it visible from outside (name) can only be accessed inside the scope
+any write to an element outside the current scope (neither up nor down) is a cow, the original name is shadowed 
+names above are accessible directly (with cow), names bellow can only be accessed if they are defined with @::name
+names are only resolved at evaluation, not definition
+
+We can have a global table of names (beam like) and so names end up as indices on it
+
+{ get_name, def_name, set_name, eval, }
+
+to define a name a type must be given (in the future we can do :_ or similar to say infer it for me)
+
+get_name:
+- get the closest
+
 
 ----
 ```python

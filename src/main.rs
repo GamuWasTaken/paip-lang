@@ -38,7 +38,7 @@ pub mod runtime {
     use crate::syntax::Expr;
     use std::collections::HashMap;
 
-    // Naive + lets assume types do nothing
+    // Naive + types do nothing
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub enum Value {
