@@ -1,0 +1,167 @@
+
+# Ghen
+
+Playground:
+---
+
+input <- "path"
+  .IO::read_lines      #: Str[]
+  .map parse_rotation  #: Int[]
+  .reduce sim_dial, [50, 0, 0] 
+  .
+
+Sim_dial : Int, Int * 3 -> Int * 3 
+sim_dial <- rot, [dial, zeros, ends] -> 0, rot
+  .range
+  .map +
+
+Parse_rotation : Str -> Int.Try
+parse_rotation <- line -> line # Str
+  .split 1                     # (Str, Str)
+  .map parse_sign, Int::parse  # (Int, Int + Unit)
+  .map 
+  .join * # 
+  .Try::ok
+
+Parse_sign : Str -> Int
+# when function starts with arg. and you dont need to reference arg anymore
+# you can use . sintax instead of <- ... -> sintax
+parse_sign <-
+  .eq "L"
+  .pick 1, -1
+
+
+## traits, same as the name of the represented function
+# Capitalized if specific type, lower if var
+
+Pick : Bool, (Int, Int) -> String
+Pick : Bool, (Int, Int) -> Bool
+
+pub Pick: Bool, (a, a) -> a
+pub Eq  : a, a -> Bool
+pub Map : a[], (a -> b) -> b[]
+pub Reduce : a[], (a, b -> b), b -> b
+pub Reduce : a[], (a, a -> a) -> a
+
+mod Lists {
+  pub List : a -> b[]
+}
+
+mod Tuples {
+  pub Join : a, (b, c -> c) -> c
+  join <- tup, f -> tup.Lists::list.reduce f
+
+  pub Split : a -> ()
+}
+
+mod Ranges {
+  pub Range : (Int, Int) -> Int[]
+  range <- (from, to) -> from.range to
+
+  pub Range : Int, Int -> Int[]
+}
+
+mod Ints {
+  pub parse : Str -> Int.Try
+
+}
+
+mod Trys {
+  pub Try : value + Error
+  pub Error : Unit, message
+
+  # to make ops/funcs handle errors there must be an impl that receives the error
+  # and either solves it (gives a non error value) or passes it
+
+  # the first arg is the best guess for error values
+}
+
+pub Str : Int, Char[]
+
+----
+
+Types: unit, int, char(utf8), float, a:T+b:T, T[] / T*const, T*T, a:T*b:T, T^T
+
+Literals:
+- unit          , ()
+- int           , 89
+- char(utf8)    , 'a'
+- float         , 9.324
+- T[] / T*const , [1,2,3]
+- a:T+b:T       , Some 3
+- T*T           , ( a, 'c', 3.8 )
+- a:T*b:T       , ( a = 1, b = 'c') 
+- T^T           ,  a, b, c -> a
+                     .foo b
+                     .bar c
+
+Functions:
+. is an infix operator that calls the name that follows with a tuple made out of
+the first operand and the elements that follow the function name
+
+```
+a
+  .foo b c
+```
+is equivalent to this in other langs
+```
+foo(a,b,c)
+```
+Allowing the following:
+```
+a
+  .foo b c
+  .bar d e
+  .baz f g
+```
+that would act as
+```
+baz(
+  bar(
+    foo(
+      a,b,c
+    ), d, e
+  ), f, g
+)
+```
+could be interesting to have different operators
+
+Option<t, e> : Ok t | Err e
+
+``` # prints 1 and returns Ok ()
+Ok 1
+  ! IO::print
+```
+``` # returns Err 1
+Err 1
+  ! IO::print
+```
+
+``` # returns Ok 1
+Ok 1
+  ? IO::print
+```
+``` # prints 1 and returns Err ()
+Err 1
+  ? IO::print
+```
+
+``` # maps IO::print over the array
+[1,2,3]
+  : IO::print
+```
+
+
+ 
+
+Expressions: binds value to name
+  name <- value
+
+Namespaces:
+  ```
+  mod name {
+    ...
+  }
+  ```
+
+
