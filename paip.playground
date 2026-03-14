@@ -1,8 +1,127 @@
 
-# Ghen
+# Paip lang
 
 Playground:
----
+
+
+# brainfuck interpreter:
+
+# get input, i = 0
+# get input[i]
+# match
+# repeat if i == input.len
+
+# IO(for now just hardcoded input string will do)
+# array indexing
+# array length
+# loop (recursion?)
+# branch (match?)
+# match (literally the definition of a function)
+# product type projection
+
+"input"
+.interpret
+
+(
+  Int*'memory,
+  Int 'head,
+  Int 'current,
+  Char*'input
+)'State
+
+State'default.def { [], 0, 0, "" }
+
+State'shift.def State'state Int'amount {
+  (state::head.add amount)'state::head
+
+  state
+}
+
+State'change.def State'state Int'amount {
+  (
+    state::memory
+    .index state::head
+    .add amount
+  )'state::memory @ state::head
+
+  state
+}
+
+State'jump.def State'state {
+  
+}
+
+Int'find_pair.def Char*'input Int'dir Int'pos Int'count {
+
+  input
+  .index pos
+  .match
+    "]", (count.add (dir.mul -1))
+    "[", (count.add dir)
+         count
+  .bind Int'count
+
+  count
+  .match
+    0, pos
+       advance_to_pair input dir (pos.add dir) count  
+}
+
+Int*'interpret.def Char*'input {
+
+  ().bind Int'current # Maybe use let/var instead of bind
+
+  input
+  .index current
+  .bind Char'command
+
+  command
+  .match
+    ">", { (state.shift +1)'state }
+    "<", { (state.shift -1)'state }
+    "+", { (state.change +1)'state }
+    "-", { (state.change -1)'state }
+    ".", { # todo io }
+    ",", { # todo io }
+    "[", {
+      memory
+      .index head
+      .eq 0
+      .match
+        true, { # advance to matching ] }
+        false, { }
+        
+    }
+    "]", {
+      memory
+      .index head
+      .eq 0
+      .match
+        true, { # advance to matching ] }
+        false, { }
+        
+    }
+}
+
+# TODO if we use eager eval until bind is not found
+# but then we need a way to stop said eval
+
+# @ (at) is an operator of the form: val@ | val@offset where offset is Int that returns a *type (reference) (?) 
+
+# ' (quote) is an operator of the form: val'name, it defines atoms, an atom is a named value
+# Whenever a name is evaluated it is searched in the ctx
+# TODO what happens if not found
+
+# { } (block) is a function
+
+# . (dot) is an operator of the form: arg.func arg* that calls func and binds the passed atoms to its context
+
+# , (comma) is an operator of the form: val,val that extends types in a product way
+
+# white space between symbols and names is irrelevant
+
+
+------------------------------------------------------------
 
 input <- "path"
   .IO::read_lines      #: Str[]

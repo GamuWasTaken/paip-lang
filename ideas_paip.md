@@ -1,4 +1,9 @@
 
+# Wild
+
+Implement brainfuck to demosntrate turing completness :)
+
+
 # Desarrollo e implementación de un lenguaje de scripts, embebible y tipado
 # de proposito general orientado al procesamiento de flujos de datos
 #   junto con una librería estandar
