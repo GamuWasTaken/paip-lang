@@ -1,0 +1,50 @@
+
+
+# Functions are just code blocks
+
+{ name.print }
+
+# Params are implicit (`name` is required to run the block)
+
+{ ("Hello ".concat name).print }'greet
+
+# To reference it we need to give it a name
+
+"Peter"'name.greet
+
+# To call it we provide the necessary atoms
+
+{ ("Hello "'a.concat name'b)'message.print }'greet
+
+# But writting names all the time is anoying
+
+(Char*'name -> Unit)'greet
+
+# We can define the interface of the function, to give an order to its arguments
+# Not all the params need to be defined, but then they will have to be given a name
+
+triple_add'(Int'a, Int'b, Int'c -> Int)
+triple_add'{ a .add b .add c }
+
+triple_add'(Int'a, Int'b, Int'c -> Int):{ a .add b .add c }
+
+# A type and value can have the same name, as `type`s and `value`s are type childs of `Top`
+
+
+Any problem making atoms name'value instead of value'name?
+
+2=a  2'a
+a=2  a'2
+
+why do we use ', and why in that order
+- Char*'name looks better that name'Char*, (does it?)
+- = is associated with assignment, its weird for it to create something
+- (Int=a, b=Int, Int=c -> Int) looks weird no matter the order
+- Types are values, they shouldnt have different syntax
+- The order im willing to change, there is no real reason why it should be val'name
+
+# What if
+names {
+  type,
+  Option<value>
+}

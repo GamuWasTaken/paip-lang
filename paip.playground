@@ -31,8 +31,14 @@ Playground:
 
 State'default.def { [], 0, 0, "" }
 
-State'shift.def State'state Int'amount {
+State'shift_head.def State'state Int'amount {
   (state::head.add amount)'state::head
+
+  state
+}
+
+State'shift_opp.def State'state Int'amount {
+  (state::current.add amount)'state::current
 
   state
 }
@@ -47,14 +53,10 @@ State'change.def State'state Int'amount {
   state
 }
 
-State'jump.def State'state {
-  
-}
+State'find_pair.def State'state Int'dir Int'count {
 
-Int'find_pair.def Char*'input Int'dir Int'pos Int'count {
-
-  input
-  .index pos
+  state
+  .index state::current
   .match
     "]", (count.add (dir.mul -1))
     "[", (count.add dir)
@@ -63,8 +65,12 @@ Int'find_pair.def Char*'input Int'dir Int'pos Int'count {
 
   count
   .match
-    0, pos
-       advance_to_pair input dir (pos.add dir) count  
+    0,{ state }
+      {
+        state::current.add dir
+
+        find_pair state dir  count
+      }
 }
 
 Int*'interpret.def Char*'input {
@@ -77,8 +83,8 @@ Int*'interpret.def Char*'input {
 
   command
   .match
-    ">", { (state.shift +1)'state }
-    "<", { (state.shift -1)'state }
+    ">", { (state.shift_head +1)'state }
+    "<", { (state.shift_head -1)'state }
     "+", { (state.change +1)'state }
     "-", { (state.change -1)'state }
     ".", { # todo io }
@@ -88,9 +94,8 @@ Int*'interpret.def Char*'input {
       .index head
       .eq 0
       .match
-        true, { # advance to matching ] }
+        true, { state.find_pair  }
         false, { }
-        
     }
     "]", {
       memory
@@ -121,7 +126,7 @@ Int*'interpret.def Char*'input {
 # white space between symbols and names is irrelevant
 
 
-------------------------------------------------------------
+------------------------------------------------------------ Old
 
 input <- "path"
   .IO::read_lines      #: Str[]
