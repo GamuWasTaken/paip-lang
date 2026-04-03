@@ -1,0 +1,44 @@
+
+# To manage names, paip has atoms
+
+my_var'4
+
+# Once defined its added to the context
+
+# TODO decide how contexts work
+- What happens whith CRUD
+
+if you name something, does it get added to the context?
+to avoid polluting the scopes, context can be defined with () (parens) 
+
+ctx is a dict
+writing an atom adds an element to the closest ctx
+
+another problem
+how do we handle accessing parts of complex types
+aka lists and products
+
+in a way a name is an accessor
+using ' (quote) is more like
+
+where ' what
+
+in the sense of where to put it, and what to put
+
+in that way, we could add to the sintax and modify
+the where part, as to specify a part of the name to
+put the value at
+
+list'1,2,3
+
+list@2'1 (would make list = 1,1,3)
+
+Pair'(
+  a'int,
+  b'int
+)
+
+mypair'1,2
+
+mypair@a'2 (would make mypair = a:2, b:2)
+

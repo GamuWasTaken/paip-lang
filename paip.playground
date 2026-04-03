@@ -22,71 +22,67 @@ Playground:
 "input"
 .interpret
 
-(
-  Int*'memory,
-  Int 'head,
-  Int 'current,
-  Char*'input
-)'State
+State'(
+  memory'Int*,
+  head'Int ,
+  current'Int ,
+  input'Char*
+)
 
-State'default.def { [], 0, 0, "" }
+default'{ [], 0, 0, "" }
 
-State'shift_head.def State'state Int'amount {
-  (state::head.add amount)'state::head
-
-  state
-}
-
-State'shift_opp.def State'state Int'amount {
-  (state::current.add amount)'state::current
+shift_head'{
+  state::head'(state::head.add amount)
 
   state
-}
+}.(state'State, amount'Int -> State)
 
-State'change.def State'state Int'amount {
-  (
+shift_opp'{
+  state::current'(state::current.add amount)
+
+  state
+}.(state'State, amount'Int -> State)
+
+change'  {
+  state::memory @ state::head'(
     state::memory
     .index state::head
     .add amount
-  )'state::memory @ state::head
+  )
 
   state
-}
+}.(state'State, amount'Int -> State)
 
-State'find_pair.def State'state Int'dir Int'count {
+find_pair'{
 
-  state
-  .index state::current
-  .match
-    "]", (count.add (dir.mul -1))
-    "[", (count.add dir)
-         count
-  .bind Int'count
+  count'(
+    state
+    .index state::current
+    .match
+      "]", (count.add (dir.mul -1))
+      "[", (count.add dir)
+           count
+  )
 
   count
   .match
     0,{ state }
       {
-        state::current.add dir
-
+        state::current'(state::current.add dir)
         find_pair state dir  count
       }
-}
+}.(state'State, dir'Int, count'Int -> State)
 
-Int*'interpret.def Char*'input {
-
-  ().bind Int'current # Maybe use let/var instead of bind
-
-  input
-  .index current
-  .bind Char'command
+interpret'{
+# TODO end the implementation
+  command'(input.index current)
 
   command
   .match
-    ">", { (state.shift_head +1)'state }
-    "<", { (state.shift_head -1)'state }
-    "+", { (state.change +1)'state }
-    "-", { (state.change -1)'state }
+    ">", { state'(state.shift_head +1) }
+    "<", { state'(state.shift_head -1) }
+    "+", { state'(state.change +1) }
+    "-", { state'(state.change -1) }
     ".", { # todo io }
     ",", { # todo io }
     "[", {
@@ -94,7 +90,7 @@ Int*'interpret.def Char*'input {
       .index head
       .eq 0
       .match
-        true, { state.find_pair  }
+        true, { state.find_pair }
         false, { }
     }
     "]", {
@@ -104,16 +100,15 @@ Int*'interpret.def Char*'input {
       .match
         true, { # advance to matching ] }
         false, { }
-        
     }
-}
+}.(input'Char* -> Int*)
 
 # TODO if we use eager eval until bind is not found
 # but then we need a way to stop said eval
 
 # @ (at) is an operator of the form: val@ | val@offset where offset is Int that returns a *type (reference) (?) 
 
-# ' (quote) is an operator of the form: val'name, it defines atoms, an atom is a named value
+# ' (quote) is an operator of the form: name'val, it defines atoms, an atom is a named value
 # Whenever a name is evaluated it is searched in the ctx
 # TODO what happens if not found
 
