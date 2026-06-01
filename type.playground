@@ -1,0 +1,13 @@
+
+# Types start with uppercase
+
+mynum'8 Int
+
+# ' (quote) is an operator of the form `name ' value [Type]`, if type is not specified it is inferred
+
+mynum'9
+
+# redefining the atom
+- is an error
+- asigns to it
+- shadows it

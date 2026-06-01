@@ -1,4 +1,13 @@
 
+# Base elements
+{} body
+() context
+.  call (context application)
+'  name (name association)
+:  type (type association)
+
+// MAYBE have a simbol to represent the current context
+
 # Paip lang
 
 Playground:
