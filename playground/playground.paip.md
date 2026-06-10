@@ -1,3 +1,14 @@
+# The core has only names and blocks
+
+# Names
+ - simply a string of alphanumeric + _ chars
+ - it is used to reference elements
+
+# Blocks
+ - simply a list of elements
+ - defines an internal scope
+ - can reference elements from outside, but on mutation they are adopted (mutation does not leak)
+ - blocks dont own their elements, they just namespace them
 
 # [] : `block` / `product`
  - A `context` is just a product of `variable`s
@@ -7,9 +18,9 @@
  - (::) accesses the elements of a scope
  - (@::name:type=value) defines a field in the current context, that is accessible from outside
  - return(@>), products return the last value, therefore putting (;) at the end makes the last element implicitly []
- - bloks are lists of expressions separated by (;)
- - scopes inherit elements from parent scope, use cow
-  - scope has access to every element in parent but modifications stay in the scope, the cannot leak
+ - blocks are lists of expressions separated by (;)
+ - scopes inherit elements from parent scope, and use cow
+  - scope has access to every element in parent but modifications stay in the scope, they cannot leak
  - __builtin__
   - run: receives all the names it uses
  - the type of a scope is inferred by the names it uses
@@ -30,15 +41,14 @@
    - ? function.run [value1, value2]
 
 # () : precedence
+- Do we even need precedence disambiguation?
 
+# (origin::)
+ - on names means `the name 'name' attached to origin`
+ - on lists of names applies to each of the names
+# there is no opaque state (@ doesnt remember where it was first written)
 
 ----
-do we want statements (aka pure side effect no value) (in a way not attaching a var to the context is a statement, as its value can never be accessed again)
-We need sugar for arrays having to put @:: in front of each element is crazy
-- Well we could allways do, @::[a,b,c...], like we have done for write and stdout below
- - We can do that because ::name means attach ::[...] means get all of them (we can treat it differently depending on if we do it on a name or on @)
-
-products are half indexable, with the var and ctx constructs
 we can index by number, and it returns the expression in that position, without evaluating it
 - The an interpreter just iterates the outer block and evals each line :O
 
@@ -47,11 +57,21 @@ what are types? empty variables :)
 
 Types are boxes for their possible values, when defining a function (aka accessing @::name inside a block without giving it a value) we are specifiying a parameter of the function, with an explicit or implicit type (depending on how we use it), in this way, the type of a function is of the form references_made>output
 
+Types define a function from Self to unit that panics if the provided element was not of that type (assert)
+
 And therefore a type is just an empty var, we could attach it a function to check if the given value is of the correct type
 
 
 There is going to be several targets (debug, prod, ...) so we can optimize for each
 
+
+The possible expressions in the lang are:
+- name
+- block ([value;*])
+- typing (name: type), TODO define type as a value
+- assign (name = value), TODO define value as value
+- return (@> value), pops the current block with value (implicit at the end of the block?)
+- calling (value.value block?), adds the first value to the block, binds it to the second value and calls it
 
 ----
 ```python
