@@ -85,6 +85,22 @@ get_name:
 - get the closest
 
 
+Using the BEAM approach to names, we can have
+Vec<Stack<(depth, expr)>>
+
+[
+ name = [
+  @::a = [
+
+   b = name.func
+  ];
+ ];
+
+ thing = name::a
+]
+
+
+
 ----
 ```python
 # each file is a block (maybe we can import by filename?)
