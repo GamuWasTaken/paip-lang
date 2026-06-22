@@ -1,11 +1,24 @@
+# each file is a block (maybe we can import by filename?)
 
-name: type = [
-	something.func [ @::a=3 ]
-]
+@::user: String = iker; # Attaches user:String to the file block
 
-# definition
-name : type -> var
-# assign
-var = value (either by ref, the name of the var, or by value, name: type)
-# call
-name . name block?
+# the `@::name` couldnt be `name`, the @:: forces the caller to explicitly pass a name var, it wont take it from the parent context
+# the type says, from a block that has `name` of the type std::io::write::data in a scope with std::io::write and stdout defined to []
+@::print_name: [@::name: write::data ; std::io::[write;stdout]]>[] = [
+ stdout.write [@::name];
+];
+# The above function type is not fully defined, std::io::write only has the following limitations:
+# - it must have an attached var called data that is a valid type
+# - it must accept a parameter of the type data
+
+#* name:type creates a var and adds it to the scope, var=val binds the value to the var *#
+@::id: [@::x: Int]>[Int] = [ @> x ];
+
+user.print_name; # ok
+[].print_name; # not ok, name is only looked for in the provided context, and its empty
+
+3
+ .add [4]
+ .mul [5]
+ .write [@::sink=std::io::stdout]
+;

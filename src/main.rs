@@ -1,30 +1,44 @@
+use std::{ops::Index, rc::Rc};
+
 use crate::lexer::ToTokens;
 
 mod lexer;
 mod macros;
 
 fn main() {
-    let input = include_str!("../input.paip").trim();
+    let input = include_str!("../input.paip");
 
-    let tokens = input.char_indices().tokens();
+    let mut tokens = input.char_indices().tokens();
     dbg!(input);
-    tokens.for_each(|t| println!("{:?}", t));
-    // TODO syntax iterator
+    tokens.count();
+    tokens
+        .tokens
+        .into_iter()
+        .zip(
+            tokens
+                .positions
+                .into_iter()
+                .chain([input.len() as u32].into_iter())
+                .skip(1),
+        )
+        .fold(0u32, |start, (t, end)| {
+            let (start, end): (usize, usize) = (start as _, end as _);
+            println!("'{}' - {t:?}", &input[start..end]);
+
+            end as _
+        });
 }
+
+// text -> tokens -> expr 󱞳
 
 mod syntax {
 
     #[derive(Debug, Clone, Hash)]
-    pub enum Value<'a> {
+    pub enum Expr<'a> {
         List(Vec<Expr<'a>>), // [ expr* ]
         This,                // @
         Name(&'a str),       // name
         Builtin(fn(Expr<'a>) -> Expr<'a>),
-    }
-
-    #[derive(Debug, Clone, Hash)]
-    pub enum Expr<'a> {
-        Val(Value<'a>),
 
         Let(Box<Expr<'a>>, Box<Expr<'a>>), // name: name
         Get(Box<Expr<'a>>, Box<Expr<'a>>), // this::name | name::name | path::name
@@ -33,7 +47,21 @@ mod syntax {
         Run(Box<Expr<'a>>, Box<Expr<'a>>, Box<Expr<'a>>), // expr .name list
         Ret(Box<Expr<'a>>),                               // @> expr
     }
+
+    // Can all be build from left to right
+    // what happens with errors?
+    // can we treat tokens as simple operators?
+    //
+    // All expr are either a list or name op expr
+    //
+    // [ open a new block
+    // ] close the last block
+    // @ this block
+    // name select entry
+    // : if next is name create new entry selected
+    // ::
 }
+
 pub mod runtime {
     use crate::syntax::Expr;
     use std::collections::HashMap;

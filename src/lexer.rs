@@ -24,7 +24,8 @@ build_parser!(
     strings: [
         char::is_space => Whitespace,
         char::is_name => Name
-    ]
+    ],
+    comment: '#'
 );
 
 #[derive(Debug, Clone)]
@@ -34,8 +35,8 @@ where
 {
     iter: T,
 
-    tokens: Vec<Kind>,
-    positions: Vec<u32>,
+    pub tokens: Vec<Kind>,
+    pub positions: Vec<u32>,
 }
 
 impl<T> Tokens<T>
